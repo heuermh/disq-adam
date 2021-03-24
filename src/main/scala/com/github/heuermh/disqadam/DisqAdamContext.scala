@@ -2,7 +2,7 @@ package com.github.heuermh.disqadam
 
 import grizzled.slf4j.Logging
 
-import htsjdk.samtools.{ SAMFileHeader, SAMRecord, ValidationStringency }
+import htsjdk.samtools.ValidationStringency
 
 import org.bdgenomics.adam.converters.{ SAMRecordConverter, VariantContextConverter }
 
@@ -12,12 +12,7 @@ import org.bdgenomics.adam.ds.read.AlignmentDataset
 
 import org.bdgenomics.adam.ds.variant.VariantContextDataset
 
-import org.bdgenomics.formats.avro.Alignment
-
-import org.disq_bio.disq.HtsjdkReadsRdd
-import org.disq_bio.disq.HtsjdkVariantsRdd
-import org.disq_bio.disq.HtsjdkReadsRddStorage
-import org.disq_bio.disq.HtsjdkVariantsRddStorage
+import org.disq_bio.disq.{ HtsjdkReadsRddStorage, HtsjdkVariantsRddStorage }
 
 object DisqAdamContext {
 
@@ -70,14 +65,14 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
       .validationStringency(stringency)
     val htsjdkReadsRdd = htsjdkReadsRddStorage.read(path)
 
-    val header = htsjdkReadsRdd.getHeader()
+    val header = htsjdkReadsRdd.getHeader
     val references = SAMRecordConverter.references(header)
     val readGroups = SAMRecordConverter.readGroups(header)
     val processingSteps = SAMRecordConverter.processingSteps(header)
     val converter = new SAMRecordConverter()
 
-    val reads = htsjdkReadsRdd.getReads()
-    val alignmentRdd = reads.rdd.map(converter.convert(_))
+    val reads = htsjdkReadsRdd.getReads
+    val alignmentRdd = reads.rdd.map(converter.convert)
 
     AlignmentDataset(alignmentRdd, references, readGroups, processingSteps)
   }
@@ -123,14 +118,14 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
       .validationStringency(stringency)
     val htsjdkReadsRdd = htsjdkReadsRddStorage.read(path)
 
-    val header = htsjdkReadsRdd.getHeader()
+    val header = htsjdkReadsRdd.getHeader
     val references = SAMRecordConverter.references(header)
     val readGroups = SAMRecordConverter.readGroups(header)
     val processingSteps = SAMRecordConverter.processingSteps(header)
     val converter = new SAMRecordConverter()
 
-    val reads = htsjdkReadsRdd.getReads()
-    val alignmentRdd = reads.rdd.map(converter.convert(_))
+    val reads = htsjdkReadsRdd.getReads
+    val alignmentRdd = reads.rdd.map(converter.convert)
 
     AlignmentDataset(alignmentRdd, references, readGroups, processingSteps)
   }
@@ -157,14 +152,14 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
     val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(ac.sc)
     val htsjdkVariantsRdd = htsjdkVariantsRddStorage.read(path)
 
-    val header = htsjdkVariantsRdd.getHeader()
+    val header = htsjdkVariantsRdd.getHeader
     val headerLines = VariantContextConverter.headerLines(header)
     val samples = VariantContextConverter.samples(header)
     val references = VariantContextConverter.references(header)
     val converter = VariantContextConverter(headerLines, stringency, ac.sc.hadoopConfiguration)
 
-    val variants = htsjdkVariantsRdd.getVariants()
-    val variantContextRdd = variants.rdd.flatMap(converter.convert(_))
+    val variants = htsjdkVariantsRdd.getVariants
+    val variantContextRdd = variants.rdd.flatMap(converter.convert)
 
     VariantContextDataset(
       variantContextRdd,
