@@ -4,7 +4,7 @@ import grizzled.slf4j.Logging
 
 import htsjdk.samtools.ValidationStringency
 
-import org.bdgenomics.adam.converters.{ SAMRecordConverter, VariantContextConverter }
+import org.bdgenomics.adam.converters.{ AlignmentConverter, VariantContextConverter }
 
 import org.bdgenomics.adam.ds.ADAMContext
 
@@ -66,10 +66,10 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
     val htsjdkReadsRdd = htsjdkReadsRddStorage.read(path)
 
     val header = htsjdkReadsRdd.getHeader
-    val references = SAMRecordConverter.references(header)
-    val readGroups = SAMRecordConverter.readGroups(header)
-    val processingSteps = SAMRecordConverter.processingSteps(header)
-    val converter = new SAMRecordConverter()
+    val references = AlignmentConverter.references(header)
+    val readGroups = AlignmentConverter.readGroups(header)
+    val processingSteps = AlignmentConverter.processingSteps(header)
+    val converter = new AlignmentConverter()
 
     val reads = htsjdkReadsRdd.getReads
     val alignmentRdd = reads.rdd.map(converter.convert)
@@ -119,10 +119,10 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
     val htsjdkReadsRdd = htsjdkReadsRddStorage.read(path)
 
     val header = htsjdkReadsRdd.getHeader
-    val references = SAMRecordConverter.references(header)
-    val readGroups = SAMRecordConverter.readGroups(header)
-    val processingSteps = SAMRecordConverter.processingSteps(header)
-    val converter = new SAMRecordConverter()
+    val references = AlignmentConverter.references(header)
+    val readGroups = AlignmentConverter.readGroups(header)
+    val processingSteps = AlignmentConverter.processingSteps(header)
+    val converter = new AlignmentConverter()
 
     val reads = htsjdkReadsRdd.getReads
     val alignmentRdd = reads.rdd.map(converter.convert)
