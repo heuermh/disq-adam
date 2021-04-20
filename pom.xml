@@ -38,8 +38,8 @@
   <properties>
     <adam.version>0.35.0-SNAPSHOT</adam.version>
     <bdg-utils.version>0.3.0</bdg-utils.version>
-    <disq.version>0.3.7</disq.version>
-    <htsjdk.version>2.23.0</htsjdk.version>
+    <disq.version>0.3.8-SNAPSHOT</disq.version>
+    <htsjdk.version>2.24.1</htsjdk.version>
     <scala.version>2.12.10</scala.version>
     <scala.artifact.suffix>2.12</scala.artifact.suffix>
     <spark.version>3.0.2</spark.version>

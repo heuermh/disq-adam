@@ -59,6 +59,8 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
    */
   def loadDisqBam(path: String, useNio: Boolean, stringency: ValidationStringency): AlignmentDataset = {
     logger.info(s"Loading $path in BAM format as AlignmentDataset with Disq...")
+    logger.info(s"Using nio $useNio and stringency $stringency");
+
     val htsjdkReadsRddStorage = HtsjdkReadsRddStorage
       .makeDefault(ac.sc)
       .useNio(useNio)
@@ -111,6 +113,8 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
    */
   def loadDisqCram(path: String, referencePath: String, useNio: Boolean, stringency: ValidationStringency): AlignmentDataset = {
     logger.info(s"Loading $path in CRAM format as AlignmentDataset with Disq...")
+    logger.info(s"Using reference path $referencePath, nio $useNio, and stringency $stringency");
+
     val htsjdkReadsRddStorage = HtsjdkReadsRddStorage
       .makeDefault(ac.sc)
       .referenceSourcePath(referencePath)
