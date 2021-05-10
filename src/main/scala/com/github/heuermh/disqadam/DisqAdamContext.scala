@@ -29,33 +29,33 @@ object DisqAdamContext {
 class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with Logging {
 
   /**
-   * Load a path in BAM format as a AlignmentDataset with Disq.
+   * Load a path in BAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
-   * @return the path in BAM format as a AlignmentDataset
+   * @return the path in BAM format as an AlignmentDataset
    */
   def loadDisqBam(path: String): AlignmentDataset = {
     loadDisqBam(path, useNio = false, stringency = ValidationStringency.LENIENT)
   }
 
   /**
-   * Load a path in BAM format as a AlignmentDataset with Disq.
+   * Load a path in BAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
    * @param useNio true to use nio, defaults to false
-   * @return the path in BAM format as a AlignmentDataset
+   * @return the path in BAM format as an AlignmentDataset
    */
   def loadDisqBam(path: String, useNio: Boolean): AlignmentDataset = {
     loadDisqBam(path, useNio, stringency = ValidationStringency.LENIENT)
   }
 
   /**
-   * Load a path in BAM format as a AlignmentDataset with Disq.
+   * Load a path in BAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
    * @param useNio true to use nio, defaults to false
    * @param stringency validation stringency, defaults to ValidationStringency.LENIENT
-   * @return the path in BAM format as a AlignmentDataset
+   * @return the path in BAM format as an AlignmentDataset
    */
   def loadDisqBam(path: String, useNio: Boolean, stringency: ValidationStringency): AlignmentDataset = {
     logger.info(s"Loading $path in BAM format as AlignmentDataset with Disq...")
@@ -80,36 +80,36 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
   }
 
   /**
-   * Load a path in BAM format as a AlignmentDataset with Disq.
+   * Load a path in BAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
    * @param referencePath reference path
-   * @return the path in BAM format as a AlignmentDataset
+   * @return the path in BAM format as an AlignmentDataset
    */
   def loadDisqCram(path: String, referencePath: String): AlignmentDataset = {
     loadDisqCram(path, referencePath, useNio = false, stringency = ValidationStringency.LENIENT)
   }
 
   /**
-   * Load a path in BAM format as a AlignmentDataset with Disq.
+   * Load a path in BAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
    * @param referencePath reference path
    * @param useNio true to use nio, defaults to false
-   * @return the path in BAM format as a AlignmentDataset
+   * @return the path in BAM format as an AlignmentDataset
    */
   def loadDisqCram(path: String, referencePath: String, useNio: Boolean): AlignmentDataset = {
     loadDisqCram(path, referencePath, useNio, stringency = ValidationStringency.LENIENT)
   }
 
   /**
-   * Load a path in CRAM format as a AlignmentDataset with Disq.
+   * Load a path in CRAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
    * @param referencePath reference path
    * @param useNio true to use nio, defaults to false
    * @param stringency validation stringency, defaults to ValidationStringency.LENIENT
-   * @return the path in CRAM format as a AlignmentDataset
+   * @return the path in CRAM format as an AlignmentDataset
    */
   def loadDisqCram(path: String, referencePath: String, useNio: Boolean, stringency: ValidationStringency): AlignmentDataset = {
     logger.info(s"Loading $path in CRAM format as AlignmentDataset with Disq...")
@@ -135,10 +135,10 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
   }
 
   /**
-   * Load a path in VCF format as a VariantContextDataset with Disq.
+   * Load a path in VCF format as an VariantContextDataset with Disq.
    *
    * @param path path to load
-   * @return the path in VCF format as a VariantContextDataset
+   * @return the path in VCF format as an VariantContextDataset
    */
   def loadDisqVcf(path: String): VariantContextDataset = {
     loadDisqVcf(path, stringency = ValidationStringency.LENIENT)
