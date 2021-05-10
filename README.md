@@ -12,6 +12,3 @@ Install
 To build
 
     $ mvn install
-
-
-Requires https://github.com/bigdatagenomics/adam/pull/2305
