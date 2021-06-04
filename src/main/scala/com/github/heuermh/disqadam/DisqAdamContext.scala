@@ -12,7 +12,15 @@ import org.bdgenomics.adam.ds.read.AlignmentDataset
 
 import org.bdgenomics.adam.ds.variant.VariantContextDataset
 
-import org.disq_bio.disq.{ HtsjdkReadsRddStorage, HtsjdkVariantsRddStorage }
+import org.disq_bio.disq.{
+  FileCardinalityWriteOption,
+  HtsjdkReadsRdd,
+  HtsjdkReadsRddStorage,
+  HtsjdkVariantsRdd,
+  HtsjdkVariantsRddStorage,
+  ReadsFormatWriteOption,
+  VariantsFormatWriteOption
+}
 
 object DisqAdamContext {
 
@@ -80,7 +88,39 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
   }
 
   /**
-   * Load a path in BAM format as an AlignmentDataset with Disq.
+   * Save an AlignmentDataset to a path in BAM format with Disq.
+   *
+   * @param alignments AlignmentDataset to save
+   * @param path path to save alignments to
+   */
+  def saveDisqBam(alignments: AlignmentDataset, path: String): Unit = {
+    saveDisqBam(alignments, path, ValidationStringency.LENIENT)
+  }
+
+  /**
+   * Save an AlignmentDataset to a path in BAM format with Disq.
+   *
+   * @param alignments AlignmentDataset to save
+   * @param path path to save alignments to
+   * @param stringency validation stringency, defaults to ValidationStringency.LENIENT
+   */
+  def saveDisqBam(alignments: AlignmentDataset, path: String, stringency: ValidationStringency) = {
+    logger.info(s"Saving AlignmentDataset to $path in BAM format with Disq...")
+    logger.info(s"Using stringency $stringency");
+
+    val (header, records) = alignments.convertToSam()
+
+    val htsjdkReadsRddStorage = HtsjdkReadsRddStorage
+      .makeDefault(ac.sc)
+      .validationStringency(stringency)
+
+    val htsjdkReadsRdd = new HtsjdkReadsRdd(header, records.map(_.get()))
+
+    htsjdkReadsRddStorage.write(htsjdkReadsRdd, path, ReadsFormatWriteOption.BAM, FileCardinalityWriteOption.SINGLE)
+  }
+
+  /**
+   * Load a path in CRAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
    * @param referencePath reference path
@@ -91,7 +131,7 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
   }
 
   /**
-   * Load a path in BAM format as an AlignmentDataset with Disq.
+   * Load a path in CRAM format as an AlignmentDataset with Disq.
    *
    * @param path path to load
    * @param referencePath reference path
@@ -135,6 +175,41 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
   }
 
   /**
+   * Save an AlignmentDataset to a path in CRAM format with Disq.
+   *
+   * @param alignments AlignmentDataset to save
+   * @param path path to save alignments to
+   * @param referencePath reference path
+   */
+  def saveDisqCram(alignments: AlignmentDataset, path: String, referencePath: String): Unit = {
+    saveDisqCram(alignments, path, referencePath, ValidationStringency.LENIENT)
+  }
+
+  /**
+   * Save an AlignmentDataset to a path in CRAM format with Disq.
+   *
+   * @param alignments AlignmentDataset to save
+   * @param path path to save alignments to
+   * @param referencePath reference path
+   * @param stringency validation stringency, defaults to ValidationStringency.LENIENT
+   */
+  def saveDisqCram(alignments: AlignmentDataset, path: String, referencePath: String, stringency: ValidationStringency) = {
+    logger.info(s"Saving AlignmentDataset to $path in CRAM format with Disq...")
+    logger.info(s"Using reference path $referencePath and stringency $stringency");
+
+    val (header, records) = alignments.convertToSam()
+
+    val htsjdkReadsRddStorage = HtsjdkReadsRddStorage
+      .makeDefault(ac.sc)
+      .referenceSourcePath(referencePath)
+      .validationStringency(stringency)
+
+    val htsjdkReadsRdd = new HtsjdkReadsRdd(header, records.map(_.get()))
+
+    htsjdkReadsRddStorage.write(htsjdkReadsRdd, path, ReadsFormatWriteOption.CRAM, FileCardinalityWriteOption.SINGLE)
+  }
+
+  /**
    * Load a path in VCF format as an VariantContextDataset with Disq.
    *
    * @param path path to load
@@ -171,5 +246,63 @@ class DisqAdamContext(@transient val ac: ADAMContext) extends Serializable with 
       samples,
       VariantContextConverter.cleanAndMixInSupportedLines(headerLines, stringency, logger.logger)
     )
+  }
+
+  /**
+   * Save a VariantContextDataset to a path in uncompressed VCF format with Disq.
+   *
+   * @param variantContexts Variant contexts to save
+   * @param path path to save variants to
+   */
+  def saveDisqVcf(variantContexts: VariantContextDataset, path: String): Unit = {
+    saveDisqVcf(variantContexts, path, ValidationStringency.LENIENT)
+  }
+
+  /**
+   * Save a VariantContextDataset to a path in uncompressed VCF format with Disq.
+   *
+   * @param variantContexts Variant contexts to save
+   * @param path path to save variants to
+   * @param stringency validation stringency, defaults to ValidationStringency.LENIENT
+   */
+  def saveDisqVcf(variantContexts: VariantContextDataset, path: String, stringency: ValidationStringency) = {
+    logger.info(s"Saving VariantContextDataset to $path in uncompressed VCF format with Disq...")
+    logger.info(s"Using stringency $stringency");
+
+    val (header, records) = variantContexts.convertToVcf(stringency)
+
+    val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(ac.sc)
+    val htsjdkVariantsRdd = new HtsjdkVariantsRdd(header, records)
+
+    htsjdkVariantsRddStorage.write(htsjdkVariantsRdd, path, VariantsFormatWriteOption.VCF, FileCardinalityWriteOption.SINGLE)
+  }
+
+  /**
+   * Save a VariantContextDataset to a path in BGZF-compressed VCF format with Disq.
+   *
+   * @param variantContexts Variant contexts to save
+   * @param path path to save variants to
+   */
+  def saveDisqVcfBgzf(variantContexts: VariantContextDataset, path: String): Unit = {
+    saveDisqVcfBgzf(variantContexts, path, ValidationStringency.LENIENT)
+  }
+
+  /**
+   * Save a VariantContextDataset to a path in BGZF-compressed VCF format with Disq.
+   *
+   * @param variantContexts Variant contexts to save
+   * @param path path to save variants to
+   * @param stringency validation stringency, defaults to ValidationStringency.LENIENT
+   */
+  def saveDisqVcfBgzf(variantContexts: VariantContextDataset, path: String, stringency: ValidationStringency) = {
+    logger.info(s"Saving VariantContextDataset to $path in BGZF-compressed VCF format with Disq...")
+    logger.info(s"Using stringency $stringency");
+
+    val (header, records) = variantContexts.convertToVcf(stringency)
+
+    val htsjdkVariantsRddStorage = HtsjdkVariantsRddStorage.makeDefault(ac.sc)
+    val htsjdkVariantsRdd = new HtsjdkVariantsRdd(header, records)
+
+    htsjdkVariantsRddStorage.write(htsjdkVariantsRdd, path, VariantsFormatWriteOption.VCF_BGZ, FileCardinalityWriteOption.SINGLE)
   }
 }

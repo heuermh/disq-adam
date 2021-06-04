@@ -30,6 +30,14 @@ class DisqAdamContextSuite extends ADAMFunSuite {
     assert(alignments.rdd.count() === 61614)
   }
 
+  sparkTest("save single BAM to Hadoop filesystem local path") {
+    val dc = DisqAdamContext(sc)
+    val path = testFile("NA12878.alignedHg38.duplicateMarked.baseRealigned.bam")
+
+    val alignments = dc.loadDisqBam(path)
+    dc.saveDisqBam(alignments, "NA12878.alignedHg38.duplicateMarked.baseRealigned.disq.bam")
+  }
+
   sparkTest("load CRAM from Hadoop filesystem local path") {
     val dc = DisqAdamContext(sc)
     val path = testFile("CEUTrio.HiSeq.WGS.b37.NA12878.20.21.10m-10m100.cram")
@@ -41,6 +49,17 @@ class DisqAdamContextSuite extends ADAMFunSuite {
     assert(alignments.rdd.count() === 654)
   }
 
+  sparkTest("save single CRAM to Hadoop filesystem local path") {
+    val dc = DisqAdamContext(sc)
+    val path = testFile("CEUTrio.HiSeq.WGS.b37.NA12878.20.21.10m-10m100.cram")
+    val referencePath = testFile("human_g1k_v37.20.21.fasta.gz")
+    testFile("human_g1k_v37.20.21.fasta.gz.fai")
+    testFile("human_g1k_v37.20.21.fasta.gz.gzi")
+
+    val alignments = dc.loadDisqCram(path, referencePath)
+    dc.saveDisqCram(alignments, "CEUTrio.HiSeq.WGS.b37.NA12878.20.21.10m-10m100.disq.cram", referencePath)
+  }
+
   sparkTest("load VCF from Hadoop filesystem local path") {
     val dc = DisqAdamContext(sc)
     val path = testFile("CEUTrio.20.21.gatk3.4.g.vcf.bgz")
@@ -48,6 +67,24 @@ class DisqAdamContextSuite extends ADAMFunSuite {
 
     val variantContexts = dc.loadDisqVcf(path)
     assert(variantContexts.rdd.count() === 20037)
+  }
+
+  sparkTest("save single uncompressed VCF to Hadoop filesystem local path") {
+    val dc = DisqAdamContext(sc)
+    val path = testFile("CEUTrio.20.21.gatk3.4.g.vcf.bgz")
+    testFile("CEUTrio.20.21.gatk3.4.g.vcf.idx")
+
+    val variantContexts = dc.loadDisqVcf(path)
+    dc.saveDisqVcf(variantContexts, "CEUTrio.20.21.gatk3.4.g.disq.vcf")
+  }
+
+  sparkTest("save single BGZF-compressed VCF to Hadoop filesystem local path") {
+    val dc = DisqAdamContext(sc)
+    val path = testFile("CEUTrio.20.21.gatk3.4.g.vcf.bgz")
+    testFile("CEUTrio.20.21.gatk3.4.g.vcf.idx")
+
+    val variantContexts = dc.loadDisqVcf(path)
+    dc.saveDisqVcfBgzf(variantContexts, "CEUTrio.20.21.gatk3.4.g.disq.vcf.bgz")
   }
 
   sparkTest("load BAM from nio local path") {
