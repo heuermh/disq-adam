@@ -36,7 +36,7 @@
     </developer>
   </developers>
   <properties>
-    <adam.version>0.36.0-SNAPSHOT</adam.version>
+    <adam.version>0.36.0</adam.version>
     <bdg-utils.version>0.3.0</bdg-utils.version>
     <disq.version>0.3.9-SNAPSHOT</disq.version>
     <htsjdk.version>2.24.1</htsjdk.version>
